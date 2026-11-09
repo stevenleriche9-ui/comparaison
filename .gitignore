@@ -25,7 +25,8 @@ dist/
 sortie/
 
 
-propre/*
+data/propre/*
+!data/propre/.gitkeep
 .~lock.*#
 
 .vscode/
