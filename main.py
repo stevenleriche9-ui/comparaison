@@ -8,15 +8,15 @@ from src.comparaison import (charger_noms, construire_prix, comparer, synthese,
                              calculer_panier, PANIER)
 from src.historique import (lire_historique, analyser, analyser_naif,
                             resume_par_source)
-from src.resultats import (afficher_tableau, ecrire_csv, journal_en_lignes, formater)
-
+from src.resultats import (afficher_tableau, ecrire_csv, ecrire_excel,
+                           journal_en_lignes, formater)
 DOSSIER = "data/original/"
 SORTIE = "sortie/"
 ENSEIGNES = ["Baobab Shop", "Marché Lagune", "Comptoir Ivoire"]
 COLONNES_COMPARATIF = ["produit_id", "nom"] + ENSEIGNES + ["moins_cher", "ecart_fcfa", "ecart_pct"]
 
 MENU = """
-===== COMPARATEUR DE PRIX - ABIDJAN =====
+===== COMPARATEUR DE PRIX  =====
 1. Charger et nettoyer les données
 2. Journal de nettoyage
 3. Comparatif des prix
@@ -146,7 +146,7 @@ def option_historique(etat):
 
 
 def option_export(etat):
-    ecrire_csv(etat["comparatif"], COLONNES_COMPARATIF, SORTIE + "comparatif.csv")
+    ecrire_excel(etat["comparatif"], COLONNES_COMPARATIF, SORTIE + "comparatif.xlsx")
     ecrire_csv(journal_en_lignes(etat["journal"]),
                ["source", "id", "probleme", "action"], SORTIE + "journal.csv")
     victoires, moyennes, _ = synthese(etat["comparatif"], ENSEIGNES)
@@ -158,8 +158,7 @@ def option_export(etat):
     } for e in ENSEIGNES]
     ecrire_csv(lignes, ["enseigne", "fois_moins_chere", "ecart_moyen_fcfa", "ecart_moyen_pct"],
                SORTIE + "synthese.csv")
-    print(f"Fichiers écrits dans {SORTIE} : comparatif.csv, journal.csv, synthese.csv")
-
+    print(f"Fichiers écrits dans {SORTIE} : comparatif.xlsx, journal.csv, synthese.csv")
 
 def option_performances(etat):
     lignes, t_lecture = chrono(lire_historique, DOSSIER + "historique_prix.csv")
@@ -173,14 +172,14 @@ def option_performances(etat):
         {"etape": "Historique : version naïve (filtres répétés)", "duree_ms": round(t_naif * 1000, 1)},
     ]
     afficher_tableau(mesures, ["etape", "duree_ms"], 50)
-    print(f"\nRésultats identiques : {'oui' if rapide == naif else 'non'}")
+    """print(f"\nRésultats identiques : {'oui' if rapide == naif else 'non'}")
     if t_rapide > 0:
         print(f"La passe unique est environ {t_naif / t_rapide:.0f} fois plus rapide.")
     print("\nStructures utilisées :")
     print("- dictionnaire {produit_id: {enseigne: prix}} : accès direct en O(1)")
     print("- index inversé {mot: [produit_id]} : on ne score que les produits qui partagent un mot")
     print("- ensemble (set) pour les doublons et les mots d'un nom : test d'appartenance en O(1)")
-    print("- heapq.nlargest pour le top 3 : O(n log 3) au lieu d'un tri complet")
+    print("- heapq.nlargest pour le top 3 : O(n log 3) au lieu d'un tri complet")"""
 
 
 def option_recherche(etat):
